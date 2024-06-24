@@ -8,6 +8,8 @@ import pe.upc.learningcenter.iam.interfaces.rest.resources.SignUpResource;
 public class SignUpCommandFromResourceAssembler {
 
     public static SignUpCommand toCommandFromResource(final SignUpResource resource) {
-        return new SignUpCommand(resource.username(), resource.password(), resource.roles());
+
+        return new SignUpCommand(resource.username(),
+                resource.password(), resource.roles());
     }
 }

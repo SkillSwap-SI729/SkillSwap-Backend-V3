@@ -1,11 +1,20 @@
 package pe.upc.learningcenter.learning.domain.model.commands;
 
-public record CreateStudentCommand(String firstName,
-                                   String lastName,
-                                   String email,
-                                   String street,
-                                   String number,
-                                   String city,
-                                   String postalCode,
-                                   String country) {
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+
+public record CreateStudentCommand(
+        @NotBlank String firstName,
+        @NotBlank String lastName,
+        @NotBlank @Email String email,
+        String photoUrl,
+        Number ranking,
+        String numberCourses,
+        String aboutMe,
+        String slogan,
+        Number nRatings,
+        Number nStudents,
+        @NotBlank String username,
+        @NotBlank String password,
+        @NotBlank String entityName) {
 }

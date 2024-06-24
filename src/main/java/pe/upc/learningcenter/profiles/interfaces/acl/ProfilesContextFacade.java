@@ -2,52 +2,45 @@ package pe.upc.learningcenter.profiles.interfaces.acl;
 
 import org.springframework.stereotype.Service;
 import pe.upc.learningcenter.profiles.domain.model.commands.CreateProfileCommand;
-import pe.upc.learningcenter.profiles.domain.model.queries.GetProfileByEmailQuery;
+import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByEmailQuery;
+import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByIdQuery;
 import pe.upc.learningcenter.profiles.domain.model.valueobjects.EmailAddress;
 import pe.upc.learningcenter.profiles.domain.services.ProfileCommandService;
 import pe.upc.learningcenter.profiles.domain.services.ProfileQueryService;
 
-/**
- * Service Facade for the Profile context.
- *
- * <p>
- * It is used by the other contexts to interact with the Profile context.
- * It is implemented as part of an anti-corruption layer (ACL) to be consumed by other contexts.
- * </p>
- *
- */
 @Service
 public class ProfilesContextFacade {
     private final ProfileCommandService profileCommandService;
     private final ProfileQueryService profileQueryService;
 
-    public ProfilesContextFacade(ProfileCommandService profileCommandService, ProfileQueryService profileQueryService) {
+    public ProfilesContextFacade(ProfileCommandService profileCommandService,
+                                 ProfileQueryService profileQueryService) {
         this.profileCommandService = profileCommandService;
         this.profileQueryService = profileQueryService;
     }
+
 
     /**
      * Creates a new Profile
      *
      * @param firstName the first name
-     * @param lastName the last name
-     * @param email the email
-     * @param street the street address
-     * @param number the number
-     * @param city the city
-     * @param postalCode the postalCode
-     * @param country the country
+     * @param lastName the first name
+     * @param email the first name
+     * @param photoUrl the first name
+     * @param ranking the first name
+     * @param aboutMe the first name
+     * @param slogan the slogan
+     * @param nRatings the number of ratings
+     * @param nStudents the number of students
      * @return the profile id
      */
-    public Long createProfile(String firstName,
-                              String lastName,
-                              String email,
-                              String street,
-                              String number,
-                              String city,
-                              String postalCode,
-                              String country) {
-        var createProfileCommand = new CreateProfileCommand(firstName, lastName, email, street, number, city, postalCode, country);
+    public Long createProfile(String firstName,String lastName, String email,
+                              String photoUrl, Number ranking, String numberCourses,String aboutMe, String slogan,
+                              Number nRatings, Number nStudents, String username, String password,
+                              String profileType) {
+        var createProfileCommand = new CreateProfileCommand(firstName,lastName,  email,
+                 photoUrl,  ranking,  numberCourses,aboutMe,  slogan,
+                 nRatings,  nStudents, username, password, profileType);
         var profile = profileCommandService.handle(createProfileCommand);
         if (profile.isEmpty()) return 0L;
         return profile.get().getId();
@@ -65,5 +58,19 @@ public class ProfilesContextFacade {
         if (profile.isEmpty()) return 0L;
         return profile.get().getId();
 
+    }
+
+    public String fetchProfilePhotoUrlById (Long id) {
+        var getProfileByIdQuery = new GetProfileByIdQuery(id);
+        var profile = profileQueryService.handle(getProfileByIdQuery);
+        if (profile.isEmpty()) return " ";
+        return profile.get().getPhotoUrl();
+    }
+
+    public Long fetchProfileUserIdById (Long id) {
+        var getProfileByIdQuery = new GetProfileByIdQuery(id);
+        var profile = profileQueryService.handle(getProfileByIdQuery);
+        if (profile.isEmpty()) return 0L;
+        return profile.get().getUserId().userId();
     }
 }

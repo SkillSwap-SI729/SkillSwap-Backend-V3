@@ -30,7 +30,7 @@ public class UserCommandServiceImpl implements UserCommandService {
         var user = userRepository.findByUsername(command.username());
         if (user.isEmpty())
             throw new RuntimeException("User not found");
-        if(!user.get().getPassword().equals(command.password())) // @TODO: hashing - validar si hash no coincide con password del command
+        if (!user.get().getPassword().equals(command.password())) // @TODO: hashing - validar si hash no coincide con password del command
             throw new RuntimeException("Invalid password");
 
         var token = "sadsadsadasd";  // @TODO: tokenservice - pass username
@@ -40,10 +40,11 @@ public class UserCommandServiceImpl implements UserCommandService {
 
     @Override
     public Optional<User> handle(SignUpCommand command) {
-        if(userRepository.existsByUsername(command.username()))
+        if (userRepository.existsByUsername(command.username()))
             throw new RuntimeException("Username already exists");
 
-        var roles = command.roles().stream().map(role -> roleRepository.findByName(role.getName()).orElseThrow(()-> new RuntimeException("Role not found"))).toList();
+        var roles = command.roles().stream().map(role -> roleRepository.findByName(role)
+                .orElseThrow(() -> new RuntimeException("Role not found"))).toList();
 
         // @TODO : Use HashingService to encode password string
         var user = new User(command.username(), command.password(), roles);

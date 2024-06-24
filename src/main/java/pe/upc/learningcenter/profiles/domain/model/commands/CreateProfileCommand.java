@@ -1,15 +1,8 @@
 package pe.upc.learningcenter.profiles.domain.model.commands;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-
-public record CreateProfileCommand(
-        @NotBlank String firstName,
-        @NotBlank String lastName,
-        @NotBlank @Email String email,
-        @NotBlank String street,
-        @NotBlank String number,
-        @NotBlank String city,
-        @NotBlank String postalCode,
-        @NotBlank String country) {
+public record CreateProfileCommand (String firstName,String lastName, String email,
+                                    String photoUrl, Number ranking, String numberCourses, String aboutMe,
+                                    String slogan,
+                                    Number nRatings, Number nStudents, String username,
+                                    String password, String profileType){
 }

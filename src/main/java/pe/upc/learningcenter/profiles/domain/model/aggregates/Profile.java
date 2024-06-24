@@ -1,48 +1,75 @@
 package pe.upc.learningcenter.profiles.domain.model.aggregates;
 
-import jakarta.persistence.Embedded;
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.With;
 import pe.upc.learningcenter.profiles.domain.model.commands.CreateProfileCommand;
 import pe.upc.learningcenter.profiles.domain.model.valueobjects.EmailAddress;
 import pe.upc.learningcenter.profiles.domain.model.valueobjects.PersonName;
-import pe.upc.learningcenter.profiles.domain.model.valueobjects.StreetAddress;
+import pe.upc.learningcenter.profiles.domain.model.valueobjects.UserId;
 import pe.upc.learningcenter.shared.domain.model.aggregate.AuditableAbstractAggregateRoot;
+
+import java.util.HashSet;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Setter
+@Table(name = "profiles")
 public class Profile extends AuditableAbstractAggregateRoot<Profile> {
 
     @Embedded
-    PersonName name;
+    private UserId userId;
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "firstName", column = @Column(name = "first_name")),
+            @AttributeOverride(name = "lastName", column = @Column(name = "last_name"))})
+    PersonName personName;
 
     @Embedded
     EmailAddress email;
 
-    @Embedded
-    StreetAddress address;
+    @NotBlank
+    private String photoUrl;
 
-    public Profile(CreateProfileCommand command) {
-        this.name = new PersonName(command.firstName(), command.lastName());
+    @NotNull
+    private Number ranking;
+
+    private String numberCourses;
+    @NotBlank
+    private String aboutMe;
+    @NotBlank
+    private String slogan;
+
+    private Number nRatings;
+
+    private Number nStudents;
+    private String profileType;
+
+
+    public Profile() {
+    }
+
+    public Profile(CreateProfileCommand command, UserId userId) {
+        this.personName = new PersonName(command.firstName(), command.lastName());
         this.email = new EmailAddress(command.email());
-        this.address = new StreetAddress(command.street(), command.number(), command.city(), command.postalCode(), command.country());
+        this.photoUrl = command.photoUrl();
+        this.ranking = command.ranking();
+        this.numberCourses = command.numberCourses();
+        this.aboutMe = command.aboutMe();
+        this.slogan = command.slogan();
+        this.nRatings = command.nRatings();
+        this.nStudents = command.nStudents();
+        this.userId = userId;
+        this.profileType = command.profileType();
     }
 
     public String getFullName(){
-        return name.getFullName();
+        return personName.getFullName();
     }
-
-    public String getEmailAddress(){
-        return email.emailAddress();
-    }
-
-    public String getStreetAddress(){
-        return address.getStreetAddress();
-    }
-
 }

@@ -2,11 +2,10 @@ package pe.upc.learningcenter.iam.interfaces.rest;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pe.upc.learningcenter.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.learningcenter.iam.domain.services.UserCommandService;
+import pe.upc.learningcenter.iam.domain.services.UserQueryService;
 import pe.upc.learningcenter.iam.interfaces.rest.resources.AuthenticatedUserResource;
 import pe.upc.learningcenter.iam.interfaces.rest.resources.SignInResource;
 import pe.upc.learningcenter.iam.interfaces.rest.resources.SignUpResource;
@@ -16,16 +15,28 @@ import pe.upc.learningcenter.iam.interfaces.rest.transform.SignInCommandFromReso
 import pe.upc.learningcenter.iam.interfaces.rest.transform.SignUpCommandFromResourceAssembler;
 import pe.upc.learningcenter.iam.interfaces.rest.transform.UserResourceFromEntityAssembler;
 
+
 @RestController
-@RequestMapping(value = "/api/v1/authentication", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/v2/auth", produces = MediaType.APPLICATION_JSON_VALUE)
 public class AuthenticationController {
 
     private final UserCommandService userCommandService;
-
-    public AuthenticationController(UserCommandService userCommandService) {
+    private final UserQueryService userQueryService;
+    public AuthenticationController(UserCommandService userCommandService, UserQueryService userQueryService) {
         this.userCommandService = userCommandService;
+        this.userQueryService = userQueryService;
     }
 
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserResource> getUserById(@PathVariable Long userId) {
+        var getUserByIdQuery = new GetUserByIdQuery(userId);
+        var user = userQueryService.handle(getUserByIdQuery);
+        if (user.isEmpty()) return ResponseEntity.badRequest().build();
+
+        var userResource = UserResourceFromEntityAssembler.toResourceFromEntity(user.get());
+        return ResponseEntity.ok(userResource);
+    }
+    
     @PostMapping("/sign-in")
     public ResponseEntity<AuthenticatedUserResource> signIn(@RequestBody SignInResource signInResource){
         var signInCommand = SignInCommandFromResourceAssembler.toCommandFromResource(signInResource);
@@ -43,7 +54,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserResource> signIn(@RequestBody SignUpResource signUpResource){
+    public ResponseEntity<UserResource> signUp(@RequestBody SignUpResource signUpResource){
         var signUpCommand = SignUpCommandFromResourceAssembler.toCommandFromResource(signUpResource);
         var user = userCommandService.handle(signUpCommand);
         if(user.isEmpty()){

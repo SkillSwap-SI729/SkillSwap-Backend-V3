@@ -1,6 +1,5 @@
 package pe.upc.learningcenter.iam.domain.model.aggregates;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -34,7 +33,9 @@ public class User extends AuditableAbstractAggregateRoot<User> {
     )
     private Set<Role> roles;
 
-    public User() { this.roles = new HashSet<>(); }
+    public User() {
+        this.roles = new HashSet<>();
+    }
 
     public User(String username, String password) {
         this.username = username;

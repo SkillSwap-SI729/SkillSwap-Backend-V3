@@ -2,11 +2,13 @@ package pe.upc.learningcenter.learning.application.internal.commandservices;
 
 import org.springframework.stereotype.Service;
 import pe.upc.learningcenter.learning.application.internal.outboundservices.acl.ExternalProfileService;
+import pe.upc.learningcenter.learning.domain.model.aggregates.Instructor;
 import pe.upc.learningcenter.learning.domain.model.aggregates.Student;
 import pe.upc.learningcenter.learning.domain.model.commands.CreateStudentCommand;
-import pe.upc.learningcenter.learning.domain.model.services.StudentCommandService;
-import pe.upc.learningcenter.learning.domain.model.valueobjects.AcmeStudentRecordId;
+import pe.upc.learningcenter.learning.domain.services.StudentCommandService;
 import pe.upc.learningcenter.learning.infrastructure.persistence.jpa.repositories.StudentRepository;
+
+import java.util.Optional;
 
 @Service
 public class StudentCommandServiceImpl implements StudentCommandService {
@@ -20,22 +22,28 @@ public class StudentCommandServiceImpl implements StudentCommandService {
     }
 
     @Override
-    public AcmeStudentRecordId handle(CreateStudentCommand command) {
+    public Optional<Student> handle(CreateStudentCommand command) {
 
         var profileId = externalProfileService.fetchProfileIdByEmail(command.email());
 
         if (profileId.isEmpty()) {
-            profileId = externalProfileService.createProfile(command.firstName(),
+            profileId = externalProfileService.createProfile(
+                    command.firstName(),
                     command.lastName(),
                     command.email(),
-                    command.street(),
-                    command.number(),
-                    command.city(),
-                    command.postalCode(),
-                    command.country());
+                    command.photoUrl(),
+                    command.ranking(),
+                    command.aboutMe(),
+                    command.slogan(),
+                    command.numberCourses(),
+                    command.nRatings(),
+                    command.nStudents(),
+                    command.username(),
+                    command.password(),
+                    command.entityName());
         } else {
-            studentRepository.findByProfileId(profileId.get()).ifPresent(student -> {
-                throw new IllegalArgumentException("Student already exists");
+            studentRepository.findByProfileId(profileId.get()).ifPresent(instructor -> {
+                throw new IllegalArgumentException("Profile email already is on use");
             });
         }
 
@@ -44,6 +52,6 @@ public class StudentCommandServiceImpl implements StudentCommandService {
         var student = new Student(profileId.get());
         studentRepository.save(student);
 
-        return student.getAcmeStudentRecordId();
+        return Optional.of(student);
     }
 }
