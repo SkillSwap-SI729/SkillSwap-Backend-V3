@@ -1,10 +1,7 @@
 package pe.upc.learningcenter.iam.domain.model.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.With;
+import lombok.*;
 import pe.upc.learningcenter.iam.domain.model.valueobjects.Roles;
 
 import java.util.List;
@@ -22,6 +19,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
+    @Getter
     private Roles name;
 
     public Role(Roles name) {
