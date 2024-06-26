@@ -2,6 +2,7 @@ package pe.upc.learningcenter.iam.interfaces.acl;
 
 import org.springframework.stereotype.Service;
 import pe.upc.learningcenter.iam.domain.model.commands.SignUpCommand;
+import pe.upc.learningcenter.iam.domain.model.entities.Role;
 import pe.upc.learningcenter.iam.domain.model.queries.GetUserByIdQuery;
 import pe.upc.learningcenter.iam.domain.model.queries.GetUserByUsernameQuery;
 import pe.upc.learningcenter.iam.domain.model.valueobjects.Roles;
@@ -58,17 +59,19 @@ public class IamContextFacade {
                            String password,
                            String userType) {
 
-        var roles = new ArrayList<Roles>();
+        var roles = new ArrayList<String>();
 
         if(Objects.equals(userType, "Student")) {
-            roles.add(Roles.ROLE_STUDENT);
+            roles.add("ROLE_STUDENT");
         }
         else if(Objects.equals(userType, "Instructor")) {
-            roles.add(Roles.ROLE_STUDENT);
-            roles.add(Roles.ROLE_INSTRUCTOR);
+            roles.add("ROLE_STUDENT");
+            roles.add("ROLE_INSTRUCTOR");
         }
 
-        var signUpCommand = new SignUpCommand(username, password, roles);
+        var rolesInCommand = roles.stream().map(Role::toRoleFromName).toList();
+
+        var signUpCommand = new SignUpCommand(username, password, rolesInCommand);
 
         var user = userCommandService.handle(signUpCommand);
 

@@ -10,5 +10,5 @@ import java.util.List;
 public record SignUpCommand(
         @NotBlank String username,
         @NotBlank String password,
-        List<Roles> roles) {
+        List<Role> roles) {
 }

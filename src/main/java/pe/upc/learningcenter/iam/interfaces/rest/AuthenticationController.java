@@ -46,7 +46,9 @@ public class AuthenticationController {
             return ResponseEntity.notFound().build();
         }
 
-        var authenticatedUserResource = AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity(authenticatedUser.get().getLeft(), authenticatedUser.get().getRight());
+        var authenticatedUserResource =
+                AuthenticatedUserResourceFromEntityAssembler.toResourceFromEntity
+                        (authenticatedUser.get().getLeft(), authenticatedUser.get().getRight());
 
         return ResponseEntity.ok(authenticatedUserResource);
 

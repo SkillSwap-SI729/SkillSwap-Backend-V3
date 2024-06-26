@@ -5,6 +5,8 @@ import pe.upc.learningcenter.profiles.domain.model.aggregates.Profile;
 import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByEmailQuery;
 import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByIdQuery;
 import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByNameQuery;
+import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByUserIdQuery;
+import pe.upc.learningcenter.profiles.domain.model.valueobjects.UserId;
 import pe.upc.learningcenter.profiles.domain.services.ProfileQueryService;
 import pe.upc.learningcenter.profiles.infrastructure.persistence.jpa.repositories.ProfileRepository;
 
@@ -33,6 +35,11 @@ public class ProfileQueryServiceImpl implements ProfileQueryService {
     @Override
     public Optional<Profile> handle(GetProfileByEmailQuery query) {
         return profileRepository.findByEmail(query.emailAddress());
+    }
+
+    @Override
+    public Optional<Profile> handle(GetProfileByUserIdQuery query) {
+        return profileRepository.findByUserId(new UserId(query.userId()));
     }
 
     @Override

@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByUserIdQuery;
 import pe.upc.learningcenter.profiles.interfaces.rest.transform.UpdateProfileCommandFromResourceAssembler;
 import pe.upc.learningcenter.profiles.domain.model.querys.GetProfileByIdQuery;
 import pe.upc.learningcenter.profiles.domain.services.ProfileCommandService;
@@ -41,6 +42,16 @@ public class ProfileController {
     public ResponseEntity<ProfileResource> getProfileById(@PathVariable Long profileId) {
         var getProfileByIdQuery = new GetProfileByIdQuery(profileId);
         var profile = profileQueryService.handle(getProfileByIdQuery);
+        if (profile.isEmpty()) return ResponseEntity.badRequest().build();
+
+        var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile.get());
+        return ResponseEntity.ok(profileResource);
+    }
+
+    @GetMapping("userId/{userId}")
+    public ResponseEntity<ProfileResource> getProfileByUserId(@PathVariable Long userId) {
+        var getProfileByUserIdQuery = new GetProfileByUserIdQuery(userId);
+        var profile = profileQueryService.handle(getProfileByUserIdQuery);
         if (profile.isEmpty()) return ResponseEntity.badRequest().build();
 
         var profileResource = ProfileResourceFromEntityAssembler.toResourceFromEntity(profile.get());
